@@ -1,0 +1,75 @@
+\documentclass[addpoints]{exam}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{ctable}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{mathrsfs}
+
+\def\Red#1{\textcolor{red}{#1}}
+\def\Blue#1{\textcolor{blue}{#1}}
+
+\chqword{Pregunta}
+\chpgword{Página}
+\chpword{Puntos}
+\chbpword{Puntos extra}
+\chsword{Puntos obtenidos}
+\chtword{Total}
+
+\usepackage{hyperref}
+
+
+\pointpoints{punto}{puntos}
+\renewcommand{\solutiontitle}{\textbf{Respuesta: }}
+
+\CorrectChoiceEmphasis{\color{red}}
+
+%\printanswers
+
+\begin{document}
+\begin{center}
+{\Large Álgebra Lineal - AD2024
+\\
+\vspace{5mm}
+Dr. David Gómez Gutiérrez}
+\vspace{0.5cm}
+
+\fbox{\fbox{\parbox{5.5in}{\centering
+
+\input{Instrucciones}
+% \begin{itemize}
+% \item \Red{Lea cuidadosamente las instrucciones.}
+% \item Responda las siguientes preguntas en su cuaderno, hoja en blanco o en word, de forma clara y ordenada. 
+% \item \Red{El examen es estrictamente individual}. Queda prohibido el uso de software.
+% %\item Pueden reunirse en equipos de 3 personas para resolver dudas, pero cada quien debe entregar su actividad.
+% \item Deberá capturar las respuestas correctas en el formulario de Google de la Actividad.
+% \item Verifique sus respuestas.
+% \item Deberás subir un pdf con los procedimientos en un archivo de menos de 10Mb. Recuerda que no se obtienen puntos si el procedimiento no es claro y ordenado.
+% \item Se consideran respuestas correctas con un error de $\pm 0.01$.
+% \end{itemize}
+}}}
+\end{center}
+
+\vspace{5mm}
+
+\makebox[\textwidth]{Student Name:\enspace\hrulefill}
+
+\vspace{5mm}
+
+
+\begin{center}
+\pointtable[h][questions]
+\end{center}
+
+\pagebreak
+
+\begin{questions}
+        
+\input{Questions}   
+            
+\end{questions}
+\end{document}
+        

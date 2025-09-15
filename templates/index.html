@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Generador de Exámenes Web</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { font-family: sans-serif; margin: 2em; line-height: 1.6; }
+        .pregunta-container { border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h1>Pregunta de Álgebra Lineal Generada</h1>
+    <p>Cada vez que recargues esta página, se generará una nueva versión del problema.</p>
+
+    <div class="pregunta-container">
+        {{ pregunta_latex | safe }}
+    </div>
+
+</body>
+</html>

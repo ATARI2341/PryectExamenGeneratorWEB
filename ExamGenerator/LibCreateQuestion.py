@@ -58,7 +58,7 @@ class create_question:
         random.shuffle(list_choices_data)
         list_choices_data.append(("I", "No sé."))
 
-        # ▼▼▼ LÓGICA DUAL PARA GENERAR LAS OPCIONES ▼▼▼
+        # LÓGICA DUAL PARA GENERAR LAS OPCIONES
         final_choices = []
         if self.output_format == 'html':
             for kind, text in list_choices_data:

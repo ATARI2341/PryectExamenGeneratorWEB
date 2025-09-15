@@ -20,7 +20,7 @@ def generar_pregunta(output_format='html'):
     json_dict["Type"] = "OM"
     TemplateFile = 'ExamTemplate/TemplateSimple.tex'
 
-    # --- Definición del enunciado en LaTeX (sin cambios) ---
+    # --- Definición del enunciado en LaTeX ---
     Question = r"""
     Considere los siguientes tres vectores de $\mathbb{R}^3$.
 
@@ -35,7 +35,7 @@ def generar_pregunta(output_format='html'):
 
     dict_choices = {"Correct": [], "Incorrect": []}
 
-    # --- Generación de parámetros y cálculos (sin cambios) ---
+    # --- Generación de parámetros y cálculos ---
     parameters = dict()
     a = random.choice([random.randint(-3, -1), random.randint(1, 3)])
     b = random.choice([random.randint(-3, -1), random.randint(1, 3)])
@@ -47,7 +47,7 @@ def generar_pregunta(output_format='html'):
     d, e, f = a, b + c * b, c * a
     g, h, i = x * a, x * b + y * b, y * a
 
-    # --- Sustituciones para la plantilla (sin cambios) ---
+    # --- Sustituciones para la plantilla ---
     substitutions = {
         "a": (a, "{value}"), "b": (b, "{value}"), "c": (c, "{value}"),
         "d": (d, "{value}"), "e": (e, "{value}"), "f": (f, "{value}"),
@@ -55,7 +55,6 @@ def generar_pregunta(output_format='html'):
         "x": (x, "{value}"), "y": (y, "{value}")
     }
 
-    # ▼▼▼ INICIO DE LA MODIFICACIÓN IMPORTANTE ▼▼▼
     # --- Definición de las opciones correctas e incorrectas ---
 
     # Reescribimos la opción correcta para que sea mucho más clara
@@ -77,9 +76,8 @@ def generar_pregunta(output_format='html'):
     dict_choices["Incorrect"].append(
         r"Los tres vectores son linealmente independientes y el vector $v=\begin{bmatrix} [g] \\ [h] \\ [i] \end{bmatrix}$ se expresa como $v=[x]v_1+[y]v_2+0v_3$."
     )
-    # ▲▲▲ FIN DE LA MODIFICACIÓN ▲▲▲
 
-    # --- Creación del objeto pregunta y generación de archivos (sin cambios) ---
+    # --- Creación del objeto pregunta y generación de archivos ---
     question = LibCreateQuestion.create_question(
         DestFolder, TemplateFile, LibraryFolder,
         LatexQuestion=Question, dict_choices=dict_choices, output_format=output_format
@@ -92,7 +90,7 @@ def generar_pregunta(output_format='html'):
 
     return os.path.join(DestFolder, 'Response.tex')
 
-# --- Bloque para ejecución directa (sin cambios) ---
+# --- Bloque para ejecución directa  ---
 if __name__ == "__main__":
     print("Generando pregunta en formato LaTeX para PDF...")
     ruta_archivo = generar_pregunta(output_format='latex') 

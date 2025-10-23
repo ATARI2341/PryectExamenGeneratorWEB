@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Generador de Exámenes{% endblock %}
+
+{% block content %}
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']] // Define '$' como delimitador
+        },
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+      .pregunta-container { border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: #f9f9f9; }
+    </style>
+
+    <h1>Pregunta de Álgebra Lineal Generada</h1>
+    <p>Cada vez que recargues esta página, se generará una nueva versión del problema.</p>
+
+    <div class="pregunta-container">
+        {{ pregunta_latex | safe }}
+    </div>
+
+    <hr style="margin-top: 25px;">
+    <p>Usuario conectado: <strong>{{ usuario.nombre }}</strong></p>
+    
+{% endblock %}

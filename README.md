@@ -53,7 +53,12 @@ Antes de empezar, asegúrate de tener instalado el siguiente software:
 1.  **Python** (versión 3.8 o superior).
 2.  **Un compilador de LaTeX**, como [MiKTeX](https://miktex.org/) (para Windows), [MacTeX](https://www.tug.org/mactex/) (para macOS) o [TeX Live](https://www.tug.org/texlive/) (para Linux).
 3.  **Git** (opcional, para clonar el repositorio).
-
+4.  **Flask** 
+5.  **Flask-SQLAlchemy**
+6.  **Flask-Login**
+6.  **Flask-WTF**
+8.  **WTForms**
+9.  **email-validator**
 ---
 
 ## 🚀 Instalación
@@ -73,6 +78,7 @@ Antes de empezar, asegúrate de tener instalado el siguiente software:
 3.  **Instala las dependencias de Python:**
     ```bash
     pip install Flask numpy
+    pip install -r requirements.txt
     ```
 
 ---

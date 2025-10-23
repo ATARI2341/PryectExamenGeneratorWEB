@@ -1,0 +1,31 @@
+// preguntas_json en tabla examenes
+[
+  {
+    "id": 1,
+    "tipo": "opcion_multiple",
+    "enunciado_latex": "¿Cuál es el resultado de $\\int x^2 dx$?",
+    "opciones": ["$x^3/3 + C$", "$2x + C$", "$x^2 + C$", "$3x + C$"],
+    "indice_correcto": 0
+  },
+  {
+    "id": 2,
+    "tipo": "abierta",
+    "enunciado_latex": "Resuelve la derivada de $\\sin(x)$.",
+    "respuesta_correcta": "$\\cos(x)$"
+  },
+  {
+    "id": 3,
+    "tipo": "verdadero_falso",
+    "enunciado_latex": "$\\frac{d}{dx}(e^x) = e^x$",
+    "respuesta_correcta": true
+  }
+]
+
+
+
+// respuestas_json en tabla intentos_examen
+[
+  {"indice_pregunta": 0, "respuesta": "$x^3/3 + C$"},
+  {"indice_pregunta": 1, "respuesta": "$\\cos(x)$"},
+  {"indice_pregunta": 2, "respuesta": true}
+]

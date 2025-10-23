@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - ExamenGeneratorWEB{% endblock %}
+
+{% block content %}
+    <h1>Bienvenido a ExamenGeneratorWEB</h1>
+    <p>La plataforma para crear y gestionar tus exámenes.</p>
+    {% if not current_user.is_authenticated %}
+    <p>Por favor, <a href="{{ url_for('auth.login') }}">inicia sesión</a> o <a href="{{ url_for('auth.register') }}">regístrate</a> para continuar.</p>
+    {% endif %}
+{% endblock %}

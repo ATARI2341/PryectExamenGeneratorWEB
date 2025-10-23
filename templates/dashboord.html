@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h2>¡Bienvenido a tu Dashboard, {{ usuario.nombre }}!</h2>
+    <p>Esta página solo puede ser vista por usuarios que han iniciado sesión.</p>
+    <p>Tu email es: {{ usuario.email }}</p>
+    <p>Tu rol es: {{ usuario.rol }}</p>
+{% endblock %}

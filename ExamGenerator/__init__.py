@@ -21,6 +21,7 @@ if ruta_proyecto not in sys.path:
 try:
     # Ahora Python puede encontrar "ExamGenerator"
     # y el archivo "LibCreateQuestion.py" que está dentro
+    #@TODO
     from ExamGenerator.LibCreateQuestion import generar_pregunta
 except ImportError as e:
     # Esto falla si no existe "ExamGenerator/__init__.py"

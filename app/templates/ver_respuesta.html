@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Detalle de Examen{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Detalle del Examen de Práctica</h2>
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+            &larr; Volver al Dashboard
+        </a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h4 class="mb-0">Resumen del Envío</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Alumno:</strong> {{ respuesta.alumno.nombre }}</p>
+                    <p><strong>Fecha:</strong> {{ respuesta.fecha_envio.strftime('%Y-%m-%d %H:%M') }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h4>Calificación Final:
+                        <span class="badge 
+                            {% if respuesta.calificacion >= 8 %} bg-success 
+                            {% elif respuesta.calificacion >= 6 %} bg-warning text-dark
+                            {% else %} bg-danger 
+                            {% endif %}">
+                            {{ "%.1f"|format(respuesta.calificacion) }} / 10.0
+                        </span>
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <hr>
+    <h3>Desglose de Preguntas</h3>
+
+    {% for pregunta in preguntas %}
+    
+    {% set pregunta_index_str = "pregunta-" + loop.index0|string %}
+    {% set respuesta_alumno_idx = respuestas_alumno[pregunta_index_str] | int %}
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header">
+            <h5 class="mb-0">Pregunta {{ loop.index }}</h5>
+        </div>
+        
+        <div class="card-body">
+            <div class="pregunta-container fs-5 mb-3">
+                {{ pregunta.enunciado_latex | safe }}
+            </div>
+            
+            <hr>
+            
+            <ul class="list-group list-group-flush">
+                {% for opcion in pregunta.opciones %}
+                
+                {% set es_correcta = (loop.index0 == pregunta.respuesta_correcta) %}
+                {% set es_seleccionada = (loop.index0 == respuesta_alumno_idx) %}
+                
+                <li class="list-group-item fs-5 
+                    {% if es_correcta %}
+                        list-group-item-success
+                    {% elif es_seleccionada and not es_correcta %}
+                        list-group-item-danger
+                    {% endif %}
+                ">
+                    
+                    {% if es_seleccionada %}
+                        <strong>
+                            {% if es_correcta %}
+                                &#x2714; {% else %}
+                                &#x2718; {% endif %}
+                            (La respuesta del alumno {{ respuesta.alumno.nombre }})
+                        </strong>
+                    {% endif %}
+                    
+                    {% if es_correcta and not es_seleccionada %}
+                        <strong>&#x2714; (Correcta)</strong>
+                    {% endif %}
+
+                    {{ opcion | safe }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+
+{% endblock %}

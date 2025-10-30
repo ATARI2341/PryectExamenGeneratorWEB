@@ -8,34 +8,35 @@ from flask_login import login_required, current_user
 import sys
 import os
 from . import db
+# Importamos todos los modelos que usaremos
 from .models import Examen, Usuario, RespuestaAlumno
 
 main = Blueprint('main', __name__)
 
 # --- IMPORTACIÓN DEL SCRIPT GENERADOR ---
 try:
-    # 1. Importamos tu script real
+    # 1. Importamos tu script real (el de la ruta larga)
     from app.ExamGenerator.Preguntas.EspVec__OM__DepLin.create_question import generar_pregunta
     
-    # 2. El wrapper AHORA SÍ LLAMA AL SCRIPT IMPORTADO
+    # 2. El wrapper llama al script real
     def generar_pregunta_dict():
         """
-        Wrapper para tu script. 
-        ¡Llama a 'generar_pregunta()' y espera que devuelva un dict!
+        Wrapper que llama al script real 'generar_pregunta()'.
+        (Asegúrate de que 'create_question.py' devuelva un dict)
         """
         # --- ¡ESTA ES LA LLAMADA REAL! ---
-        # (Asegúrate de que tu 'create_question.py' devuelva un dict)
         return generar_pregunta() 
 
 except ImportError as e:
-    print(f"ADVERTENCIA: No se pudo importar el script generador. Se usará un simulador. Error: {e}")
-    # Definimos un simulador si la importación falla
+    # Si la importación falla, imprime un aviso y usa el simulador
+    print(f"ADVERTENCIA: No se pudo importar 'create_question.py'. Se usará un simulador. Error: {e}")
+    
     def generar_pregunta_dict():
+        # --- SIMULADOR DE RESPALDO ---
         import random
         num = random.randint(1, 100)
         
-        # Este es el simulador que se usa SI LA IMPORTACIÓN FALLA
-        enunciado = rf"ERROR DE IMPORTACIÓN: No se pudo cargar la pregunta real. Usando simulador N°{num}."
+        enunciado = rf"ERROR DE IMPORTACIÓN: Usando simulador N°{num}."
         opciones = [
             rf"Opción A ({num*3})", 
             rf"Opción B ({num*2})", 
@@ -48,6 +49,7 @@ except ImportError as e:
 
 @main.route('/')
 def index():
+    """Ruta para la página de inicio pública."""
     return render_template('index.html')
 
 
@@ -56,18 +58,20 @@ def index():
 def dashboard():
     """
     Dashboard Principal.
-    Para Alumnos: Muestra un examen de práctica automático.
-    Para Docentes: (Redirige por ahora)
+    Muestra una vista diferente basada en el rol del usuario.
     """
     
+    # --- Lógica para Alumnos ---
     if current_user.rol == 'alumno':
         try:
             preguntas_generadas = []
-            for i in range(10): 
+            for i in range(10): # Genera 10 preguntas
                 preguntas_generadas.append(generar_pregunta_dict())
             
+            # Guarda las preguntas (con respuestas) en la sesión segura
             session['practice_exam'] = preguntas_generadas
             
+            # Muestra la plantilla del examen de práctica
             return render_template(
                 'dashboard_alumno_practice.html', 
                 usuario=current_user,
@@ -75,28 +79,42 @@ def dashboard():
             )
             
         except Exception as e:
-            # Si el error 'name 'R' is not defined' ocurre AHORA,
-            # es porque está en tu SCRIPT 'create_question.py'
             flash(f'Error al generar el examen de práctica: {e}', 'danger')
             return render_template('dashboard_alumno_practice.html', usuario=current_user, preguntas=[])
             
-    # --- Lógica para Docentes ---
+    # --- LÓGICA PARA DOCENTES (CORREGIDA) ---
     elif current_user.rol == 'docente':
-        flash('Estás en el dashboard de práctica de alumno.', 'info')
-        return redirect(url_for('main.index')) 
+        try:
+            # 1. Busca en la BD todas las respuestas de exámenes de práctica
+            respuestas_practica = RespuestaAlumno.query.filter_by(examen_id=None)\
+                                                        .order_by(RespuestaAlumno.fecha_envio.desc())\
+                                                        .all()
+            
+            # 2. Renderiza la plantilla del docente con la lista de respuestas
+            return render_template(
+                'dashboard_docente.html', 
+                usuario=current_user,
+                respuestas=respuestas_practica
+            )
+        except Exception as e:
+            flash(f'Error al cargar las respuestas de los alumnos: {e}', 'danger')
+            return render_template('dashboard_docente.html', usuario=current_user, respuestas=[])
+    
+    # --- Redirección por si acaso ---
     else:
+        flash('Rol de usuario no reconocido.', 'warning')
         return redirect(url_for('main.index'))
 
-# --- NUEVA RUTA PARA GUARDAR EL EXAMEN ---
+
 @main.route('/submit-practice', methods=['POST'])
 @login_required
 def submit_practice():
     """
-    Recibe las respuestas del examen de práctica,
+    Recibe las respuestas del examen de práctica del alumno,
     lo califica y lo guarda en la BD.
     """
     if current_user.rol != 'alumno':
-        abort(403)
+        abort(403) # Solo alumnos pueden enviar
     
     try:
         respuestas_enviadas = request.form.to_dict()
@@ -106,6 +124,7 @@ def submit_practice():
             flash('Tu sesión ha expirado. Por favor, inténtalo de nuevo.', 'warning')
             return redirect(url_for('main.dashboard'))
 
+        # Calificar el examen
         score = 0
         total = len(preguntas_originales)
         
@@ -118,6 +137,7 @@ def submit_practice():
         
         calificacion_final = (score / total) * 10.0
         
+        # Guardar en la Base de Datos
         nueva_respuesta = RespuestaAlumno(
             examen_id=None, 
             alumno_id=current_user.id,
@@ -136,3 +156,39 @@ def submit_practice():
         flash(f'Error al guardar tus respuestas: {e}', 'danger')
 
     return redirect(url_for('main.dashboard'))
+
+
+# --- NUEVA RUTA PARA "VER DETALLES" ---
+@main.route('/respuesta/<int:respuesta_id>')
+@login_required
+def ver_respuesta(respuesta_id):
+    """
+    Página para que un docente vea los detalles
+    de una respuesta de examen de práctica.
+    """
+    # 1. Solo los docentes pueden ver esto
+    if current_user.rol != 'docente':
+        abort(403)
+        
+    # 2. Busca la respuesta en la BD usando el ID de la URL
+    respuesta = db.session.get(RespuestaAlumno, respuesta_id)
+    if not respuesta:
+        abort(404) # Si no se encuentra, error 404
+        
+    # 3. Carga los datos JSON
+    try:
+        preguntas = json.loads(respuesta.preguntas_json)
+        respuestas_alumno = json.loads(respuesta.respuestas_json)
+    except TypeError:
+        # Si ya eran dicts (porque tu db.JSON funciona bien), solo asígnalos
+        preguntas = respuesta.preguntas_json
+        respuestas_alumno = respuesta.respuestas_json
+    
+    # 4. Renderiza la nueva plantilla y le pasa todos los datos
+    return render_template(
+        'ver_respuesta.html',
+        usuario=current_user,
+        respuesta=respuesta,          # El objeto 'RespuestaAlumno' (para la nota, alumno, etc.)
+        preguntas=preguntas,          # La lista de preguntas que se hicieron
+        respuestas_alumno=respuestas_alumno # El dict de las respuestas del alumno
+    )

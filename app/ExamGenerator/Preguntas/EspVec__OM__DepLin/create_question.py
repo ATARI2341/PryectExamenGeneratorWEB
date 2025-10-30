@@ -48,7 +48,7 @@ def generar_pregunta():
     dict_choices["Correct"].append(correct_choice_string)
     
     dict_choices["Incorrect"].append( r"Los tres vectores son linealmente dependientes y son una base para $\mathbb{R}^3$.")
-    dict_choices["Incorrect"].append(r"Los tres vectores son linealmente independientes y son una base para $\mathbb{R}^3." )
+    dict_choices["Incorrect"].append(r"Los tres vectores son linealmente independientes y son una base para $\mathbb{R}^3$." )
     dict_choices["Incorrect"].append(r"Los tres vectores son linealmente independientes y la única solución a $\alpha_1v_1+\alpha_2v_2+\alpha_3v_3=0$ es la trivial ($\alpha_1=0$, $\alpha_2=0$, $\alpha_3=0$).")
     dict_choices["Incorrect"].append(r"Los tres vectores son linealmente independientes y el vector $v=\begin{bmatrix} [g] \\ [h] \\ [i] \end{bmatrix}$ se expresa como $v=[x]v_1+[y]v_2+0v_3$.")
 

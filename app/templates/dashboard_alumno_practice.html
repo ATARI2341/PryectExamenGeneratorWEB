@@ -2,15 +2,17 @@
 
 {% block title %}Examen de Práctica{% endblock %}
 
-{% block content %}
-
-<style>
+{% block content %} <style>
     .opcion-seleccionable {
         cursor: pointer;
         transition: background-color 0.2s ease-in-out;
     }
     .opcion-seleccionable:hover {
-        background-color: #f8f9fa; /* Un gris muy claro al pasar el ratón */
+        background-color: #f8f9fa; 
+    }
+    .nav-tabs-fill .nav-item {
+        flex-grow: 1;
+        text-align: center;
     }
 </style>
 
@@ -18,51 +20,121 @@
     <h2>Examen de Práctica Automático</h2>
     <p class="lead mb-0">Alumno: {{ usuario.nombre }}</p>
 </div>
-<p>Se han generado 10 preguntas aleatorias. Selecciona tu respuestas y presiona "Enviar Examen".</p>
-<hr>
 
 <form action="{{ url_for('main.submit_practice') }}" method="POST">
 
-    {% for pregunta in preguntas %}
-    
-    {% set pregunta_index = loop.index0 %}
+    <ul class="nav nav-tabs nav-tabs-fill mb-3" id="examenTab" role="tablist">
+        {% for pregunta in preguntas %}
+            {% set i = loop.index0 %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if i == 0 %}active{% endif %}" 
+                        id="tab-{{ i }}" data-bs-toggle="tab" 
+                        data-bs-target="#pregunta-{{ i }}" 
+                        type="button" role="tab" 
+                        aria-controls="pregunta-{{ i }}" 
+                        aria-selected="{{ 'true' if i == 0 else 'false' }}">
+                    P-{{ loop.index }}
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
 
-    <div class="card shadow-sm mb-4"> <div class="card-header">
-            <h4 class="mb-0">Pregunta {{ loop.index }}</h4>
-        </div>
-        
-        <div class="card-body">
-            <div class="pregunta-container fs-5 mb-3">
-                {{ pregunta.enunciado_latex | safe }}
+    <div class="tab-content" id="examenTabContent">
+        {% for pregunta in preguntas %}
+            
+            {% set i = loop.index0 %}
+            
+            <div class="tab-pane fade {% if i == 0 %}show active{% endif %}" 
+                 id="pregunta-{{ i }}" 
+                 role="tabpanel" 
+                 aria-labelledby="tab-{{ i }}">
+                
+                <div class="card shadow-sm border-0">
+                    <div class="card-header">
+                        <h4 class="mb-0">Pregunta {{ loop.index }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="pregunta-container fs-5 mb-3">
+                            {{ pregunta.enunciado_latex | safe }}
+                        </div>
+                        <hr>
+                        <div class="opciones-container">
+                            {% for opcion in pregunta.opciones %}
+                            <div class="form-check border rounded p-3 mb-2 fs-5 opcion-seleccionable">
+                                <input class="form-check-input me-2" type="radio" 
+                                       name="pregunta-{{ i }}" 
+                                       id="opcion-{{ i }}-{{ loop.index0 }}"
+                                       value="{{ loop.index0 }}"
+                                       required> 
+                                <label class="form-check-label" 
+                                       for="opcion-{{ i }}-{{ loop.index0 }}">
+                                    {{ opcion | safe }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div> 
             </div>
             
-            <hr>
-            
-            <div class="opciones-container">
-                {% for opcion in pregunta.opciones %}
-                
-                <div class="form-check border rounded p-3 mb-2 fs-5 opcion-seleccionable">
-                    <input class="form-check-input me-2" type="radio" 
-                           name="pregunta-{{ pregunta_index }}" 
-                           id="opcion-{{ pregunta_index }}-{{ loop.index0 }}"
-                           value="{{ loop.index0 }}"
-                           required> 
-                           
-                    <label class="form-check-label" for="opcion-{{ pregunta_index }}-{{ loop.index0 }}">
-                        {{ opcion | safe }}
-                    </label>
-                </div>
-                
-                {% endfor %}
-            </div> </div>
+        {% endfor %}
+    </div> 
+
+    <div class="d-flex justify-content-between mt-4">
+        <button type="button" class="btn btn-outline-secondary btn-lg" id="btnPrev">
+            &larr; Anterior
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-lg" id="btnNext">
+            Siguiente &rarr;
+        </button>
     </div>
-    {% endfor %} 
-    
+
+    <hr class="my-4">
     <div class="d-grid mt-4 mb-5">
         <button type="submit" class="btn btn-success btn-lg">
             Enviar Examen y Calificar
         </button>
     </div>
+    
 </form>
 
-{% endblock %}
+
+{% block scripts %} <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        const tabTriggers = document.querySelectorAll('#examenTab button[data-bs-toggle="tab"]');
+        const btnPrev = document.getElementById('btnPrev');
+        const btnNext = document.getElementById('btnNext');
+        let currentTabIndex = 0; 
+
+        function showTab(index) {
+            if (index < 0 || index >= tabTriggers.length) {
+                return; 
+            }
+            const tab = new bootstrap.Tab(tabTriggers[index]);
+            tab.show();
+        }
+
+        function updateButtonStates() {
+            btnPrev.disabled = (currentTabIndex === 0);
+            btnNext.disabled = (currentTabIndex === tabTriggers.length - 1);
+        }
+
+        btnNext.addEventListener('click', () => {
+            showTab(currentTabIndex + 1);
+        });
+
+        btnPrev.addEventListener('click', () => {
+            showTab(currentTabIndex - 1);
+        });
+
+        const examenTab = document.getElementById('examenTab');
+        examenTab.addEventListener('shown.bs.tab', function (event) {
+            currentTabIndex = Array.from(tabTriggers).indexOf(event.target);
+            updateButtonStates();
+        });
+
+        updateButtonStates();
+    });
+</script>
+{% endblock %} {% endblock %}

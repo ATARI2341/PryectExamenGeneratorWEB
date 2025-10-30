@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Docente{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Dashboard Docente: {{ usuario.nombre }}</h2>
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-arrow-clockwise"></i> Generar Nuevo Examen (10 Preguntas)
+        </a>
+    </div>
+
+    <hr>
+
+    <form action="{{ url_for('main.guardar_examen') }}" method="POST">
+    
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h3 class="card-title">Detalles del Examen</h3>
+                <div class="mb-3">
+                    <label for="titulo_examen" class="form-label">Título del Examen:</label>
+                    <input type="text" class="form-control" id="titulo_examen" name="titulo_examen" placeholder="Ej: Primer Parcial Álgebra Lineal" required>
+                </div>
+                
+                <input type="hidden" name="preguntas_json" value="{{ preguntas | tojson | safe }}">
+                
+                <button type
+="submit" class="btn btn-success btn-lg">
+                    Guardar este Examen
+                </button>
+            </div>
+        </div>
+    
+    </form>
+    
+    <hr>
+
+    <h3>Vista Previa de las Preguntas Generadas</h3>
+
+    {% for pregunta in preguntas %}
+    <div class="card shadow-sm mb-3">
+        <div class="card-header">
+            <h4 class="mb-0">Pregunta {{ loop.index }}</h4>
+        </div>
+        
+        <div class="card-body">
+            <div class="pregunta-container fs-5 mb-3">
+                {{ pregunta.enunciado_latex | safe }}
+            </div>
+            
+            <hr>
+            
+            <ul class="list-group list-group-flush">
+                {% for opcion in pregunta.opciones %}
+                
+                <li class="list-group-item fs-5 
+                           {% if mostrar_respuestas and loop.index0 == pregunta.respuesta_correcta %} 
+                               list-group-item-success 
+                           {% endif %}
+                ">
+                    <input class="form-check-input me-2" type="radio" name="respuesta-{{ pregunta.id_temporal }}" 
+                           id="opcion-{{ pregunta.id_temporal }}-{{ loop.index }}" disabled>
+                           
+                    <label class="form-check-label" for="opcion-{{ pregunta.id_temporal }}-{{ loop.index }}">
+                       {{ opcion | safe }}
+                    </label>
+                </li>
+                {% endfor %}
+            </ul>
+            
+            {% if mostrar_respuestas %}
+            <div class="card-footer text-success fw-bold">
+                Respuesta Correcta: Opción {{ (pregunta.respuesta_correcta + 1) }}
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+    {% endfor %}
+
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Examen de Práctica{% endblock %}
+
+{% block content %}
+
+<style>
+    .opcion-seleccionable {
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+    }
+    .opcion-seleccionable:hover {
+        background-color: #f8f9fa; /* Un gris muy claro al pasar el ratón */
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Examen de Práctica Automático</h2>
+    <p class="lead mb-0">Alumno: {{ usuario.nombre }}</p>
+</div>
+<p>Se han generado 10 preguntas aleatorias. Selecciona tu respuestas y presiona "Enviar Examen".</p>
+<hr>
+
+<form action="{{ url_for('main.submit_practice') }}" method="POST">
+
+    {% for pregunta in preguntas %}
+    
+    {% set pregunta_index = loop.index0 %}
+
+    <div class="card shadow-sm mb-4"> <div class="card-header">
+            <h4 class="mb-0">Pregunta {{ loop.index }}</h4>
+        </div>
+        
+        <div class="card-body">
+            <div class="pregunta-container fs-5 mb-3">
+                {{ pregunta.enunciado_latex | safe }}
+            </div>
+            
+            <hr>
+            
+            <div class="opciones-container">
+                {% for opcion in pregunta.opciones %}
+                
+                <div class="form-check border rounded p-3 mb-2 fs-5 opcion-seleccionable">
+                    <input class="form-check-input me-2" type="radio" 
+                           name="pregunta-{{ pregunta_index }}" 
+                           id="opcion-{{ pregunta_index }}-{{ loop.index0 }}"
+                           value="{{ loop.index0 }}"
+                           required> 
+                           
+                    <label class="form-check-label" for="opcion-{{ pregunta_index }}-{{ loop.index0 }}">
+                        {{ opcion | safe }}
+                    </label>
+                </div>
+                
+                {% endfor %}
+            </div> </div>
+    </div>
+    {% endfor %} 
+    
+    <div class="d-grid mt-4 mb-5">
+        <button type="submit" class="btn btn-success btn-lg">
+            Enviar Examen y Calificar
+        </button>
+    </div>
+</form>
+
+{% endblock %}

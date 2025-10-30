@@ -1,32 +1,54 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - Generador de Exámenes{% endblock %}
+{% block title %}Dashboard Docente{% endblock %}
 
 {% block content %}
-    <script>
-      MathJax = {
-        tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']] // Define '$' como delimitador
-        },
-        svg: {
-          fontCache: 'global'
-        }
-      };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-    <style>
-      .pregunta-container { border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: #f9f9f9; }
-    </style>
-
-    <h1>Pregunta de Álgebra Lineal Generada</h1>
-    <p>Cada vez que recargues esta página, se generará una nueva versión del problema.</p>
-
-    <div class="pregunta-container">
-        {{ pregunta_latex | safe }}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Dashboard Docente: {{ usuario.nombre }}</h2>
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg">
+            Generar Nueva Pregunta
+        </a>
     </div>
 
-    <hr style="margin-top: 25px;">
-    <p>Usuario conectado: <strong>{{ usuario.nombre }}</strong></p>
-    
+    <hr>
+
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h3 class="mb-0">Vista Previa de la Pregunta</h3>
+        </div>
+        <div class="card-body">
+            
+            <div class="pregunta-container fs-5">
+                {{ pregunta.enunciado_latex | safe }}
+            </div>
+            
+            <hr>
+            
+            <form class="mb-3">
+                <ul class="list-group list-group-flush">
+                    {% for opcion in pregunta.opciones %}
+                    <li class="list-group-item fs-5">
+                        <input class="form-check-input me-2" type="radio" name="respuesta" id="opcion-{{ loop.index }}">
+                        <label class="form-check-label" for="opcion-{{ loop.index }}">
+                           {{ opcion | safe }}
+                        </label>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </form>
+
+            <form action="{{ url_for('main.guardar_pregunta') }}" method="POST">
+                <input type="hidden" name="enunciado_latex" value="{{ pregunta.enunciado_latex }}">
+                <input type="hidden" name="opciones_json" value="{{ pregunta.opciones | tojson | safe }}">
+                <input type="hidden" name="respuesta_correcta" value="{{ pregunta.respuesta_correcta }}">
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        Guardar esta Pregunta
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
 {% endblock %}

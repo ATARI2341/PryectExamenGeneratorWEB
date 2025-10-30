@@ -3,8 +3,21 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    <h2>¡Bienvenido a tu Dashboard, {{ usuario.nombre }}!</h2>
-    <p>Esta página solo puede ser vista por usuarios que han iniciado sesión.</p>
-    <p>Tu email es: {{ usuario.email }}</p>
-    <p>Tu rol es: {{ usuario.rol }}</p>
+<div class="container">
+
+    <div class="card">
+        <h2 class="card-title">¡Bienvenido, {{ usuario.nombre }}!</h2>
+        <p><strong>Email:</strong> {{ usuario.email }}</p>
+        <p><strong>Rol:</strong> {{ usuario.rol }}</p>
+        <a href="{{ url_for('auth.logout') }}" class="btn">Cerrar Sesión</a>
+    </div>
+
+    <div class="card">
+        <h3 class="card-title">Tu Pregunta Generada</h3>
+        <div class="pregunta-container">
+            {{ pregunta_latex | safe }}
+        </div>
+    </div>
+
+</div>
 {% endblock %}

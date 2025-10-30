@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Examen: {{ examen.titulo }}{% endblock %}
+
+{% block content %}
+    <div>
+        <h2>{{ examen.titulo }}</h2>
+        <p class="lead">Docente: {{ examen.creador.nombre }}</p>
+        <p>{{ examen.descripcion }}</p>
+    </div>
+
+    <hr>
+
+    <form>
+        {% for pregunta in preguntas %}
+        <div class="card shadow-sm mb-3">
+            <div class="card-header">
+                <h4 class="mb-0">Pregunta {{ loop.index }}</h4>
+            </div>
+            
+            <div class="card-body">
+                <div class="pregunta-container fs-5 mb-3">
+                    {{ pregunta.enunciado_latex | safe }}
+                </div>
+                
+                <hr>
+                
+                <ul class="list-group list-group-flush">
+                    {% for opcion in pregunta.opciones %}
+                    <li class="list-group-item fs-5">
+                        
+                        <input class="form-check-input me-2" type="radio" 
+                               name="respuesta-{{ loop.parent.loop.index }}" 
+                               id="opcion-{{ loop.parent.loop.index }}-{{ loop.index0 }}"
+                               value="{{ loop.index0 }}">
+                               
+                        <label class="form-check-label" for="opcion-{{ loop.parent.loop.index }}-{{ loop.index0 }}">
+                           {{ opcion | safe }}
+                        </label>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+        </div>
+        {% endfor %}
+        
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-success btn-lg">Enviar Examen</button>
+        </div>
+    </form>
+
+{% endblock %}
